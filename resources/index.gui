@@ -1,0 +1,114 @@
+<svg class="background">
+  
+  <defs>
+    <symbol id="stats">
+      <g id="statsgroup">
+        <text id="statsText">
+          <animate attributeName="opacity" begin="enable" from="1" to="0" dur="3" final="keep" />
+        </text>
+      </g>
+    </symbol>
+    <symbol id="heart">
+      <g id="heartgroup">
+        <image id="heartIcon" x="5" y="5" width="48" height="48" href="stat_hr_solid_48px.png" fill="fb-red" opacity="0.5">
+          <animate attributeName="opacity" begin="enable" from="0.7" to="0.1" dur="2" final="keep" />
+        </image>
+      </g>
+    </symbol>
+  </defs>
+  
+  <!--<rect x="50" y="50" width="5" height="5" fill="fb-extra-dark-gray"/>-->
+  <line x1="0" y1="80" x2="80" y2="0" fill="#202020" />
+  <line x1="0" y1="100" x2="100" y2="0" fill="#202020" />
+  <line x1="0" y1="120" x2="120" y2="0" fill="#202020" />
+  <line x1="0" y1="140" x2="140" y2="0" fill="#202020" />
+  <line x1="0" y1="160" x2="160" y2="0" fill="#202020" />
+  
+  <mask id="mask">
+    <text class="clock" id="hours1" />
+    <text class="clock" id="hours2" />
+    <text class="clock" id="minutes1" />
+    <text class="clock" id="minutes2" />
+  </mask>
+  <svg mask="#mask" width="100%" height="100%">
+    
+    <gradientRect id="background1" x="0" y="50%-100" width="22%" height="200" 
+      gradient-type="linear"
+      gradient-x1="0" gradient-y1="50%-150"
+      gradient-x2="0" gradient-y2="50%+150"
+      gradient-color1="fb-blue"
+      gradient-color2="black"
+                  opacity="0.7"/>
+
+    <gradientRect id="background2" x="23%" y="50%-100" width="22%" height="200" 
+      gradient-type="linear"
+      gradient-x1="0" gradient-y1="50%-150"
+      gradient-x2="0" gradient-y2="50%+150"
+      gradient-color1="fb-red"
+      gradient-color2="black"
+                  opacity="0.7"/>
+
+    <gradientRect id="background3" x="55%" y="50%-100" width="22%" height="200" 
+      gradient-type="linear"
+      gradient-x1="0" gradient-y1="50%-150"
+      gradient-x2="0" gradient-y2="50%+150"
+      gradient-color1="fb-green"
+      gradient-color2="black"
+                  opacity="0.7"/>
+
+    <gradientRect id="background4" x="77%" y="50%-100" width="22%" height="200" 
+      gradient-type="linear"
+      gradient-x1="0" gradient-y1="50%-150"
+      gradient-x2="0" gradient-y2="50%+150"
+      gradient-color1="fb-orange"
+      gradient-color2="black"
+                  opacity="0.7"/>
+
+    <rect id="shadow1" x="0" y="50%" width="22%" height="3" fill="black" opacity="0.3" />
+    <rect id="shadow2" x="23%" y="50%" width="22%" height="3" fill="black" opacity="0.3" />
+    <rect id="shadow3" x="55%" y="50%" width="22%" height="3" fill="black" opacity="0.3" />
+    <rect id="shadow4" x="77%" y="50%" width="22%" height="3" fill="black" opacity="0.3" />
+
+    <rect id="bar1" x="0" y="50%" width="22%" height="100" fill="fb-blue" />
+    <rect id="bar2" x="23%" y="50%" width="22%" height="100" fill="fb-red"/>
+    <rect id="bar3" x="55%" y="50%" width="22%" height="200" fill="fb-green"/>
+    <rect id="bar4" x="77%" y="50%" width="22%" height="200" fill="fb-orange"/>
+  </svg>
+  
+
+  <rect class="battery" x="50%-5" y="50%+50" width="16" height="30" fill="grey" />
+  <rect class="battery" x="50%-1" y="50%+46" width="8" height="4" fill="grey" />
+  <rect class="battery" x="50%-5" y="50%-10" width="16" height="30" fill="grey" />
+  <rect id="batteryDrain" x="50%-2" y="50%+53" width="10" height="10" fill="black" />
+  
+  <image id="icon1" x="20" y="85%" width="32" height="32" href="stat_steps_open_32px.png" fill="fb-blue" opacity="0.45"/>
+  <image id="icon2" x="23%+15" y="85%" width="32" height="32" href="stat_floors_open_32px.png" fill="fb-red" opacity="0.45"/>
+  <image id="icon3" x="55%+20" y="85%" width="32" height="32" href="stat_am_open_32px.png" fill="fb-green" opacity="0.45"/>
+  <image id="icon4" x="77%+20" y="85%" width="32" height="32" href="stat_cals_open_32px.png" fill="fb-orange" opacity="0.45"/>
+  <use id="heartIconInstance" href="#heart"  />
+
+  <text id="dateText" />
+
+  <!--<text id="hrTextFat">
+    <animate attributeName="opacity" begin="load" from="0.8" to="0" dur="1" final="keep" repeatCount="indefinite"/>
+  </text>-->
+  <text id="hrText">
+  </text>
+
+
+
+  <use id="statsTextInstance" href="#stats"  />
+  <rect id="tap1" x="0" y="50%-100" width="22%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
+  <rect id="tap2" x="23%" y="50%-100" width="22%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
+  <rect id="tap3" x="55%" y="50%-100" width="22%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
+  <rect id="tap4" x="77%" y="50%-100" width="22%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
+  <rect id="tapBattery" x="45%" y="50%-100" width="10%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
+  <rect id="tapDate" x="30%" y="0" width="70%" height="50" fill="black" pointer-events="visible" opacity="0.0"/>
+  <rect id="tapHR" x="0" y="0" width="30%" height="50" fill="black" pointer-events="visible" opacity="0.0"/>
+  
+  <rect id="tapIcons" x="0" y="100%-50" width="100%" height="50" fill="black" pointer-events="visible" opacity="0.0"/>
+
+
+
+
+</svg>

@@ -1,0 +1,62 @@
+.background {
+  viewport-fill: black;
+}
+
+.clock {
+  font-size: 200;
+  font-family: Tungsten-Medium;
+  text-length: 2;
+  text-anchor: middle;
+  fill: white;
+  y: 50%+80;
+}
+
+#hours1 {
+  x: 11%;
+}
+
+#hours2 {
+  x: 33%;
+}
+
+#minutes1 {
+  x: 66%;
+}
+
+#minutes2 {
+  x: 88%;
+}
+
+#dateText {
+  font-size: 35;
+  text-length: 32;
+  text-anchor: end;
+  fill: dimgray;
+  y: 37;
+  x: 100%-8;
+}
+
+#hrText {
+  font-size: 35;
+  text-length: 10;
+  text-anchor: start;
+  fill: dimgray;
+  y: 37;
+  x: 9;
+}
+
+#statsText {
+  font-size: 35;
+  text-length: 32;
+  text-anchor: middle;
+  fill: white;
+  x: 50%;
+  y: 40;
+}
+
+#statsTextInstance {
+  y: 40;
+  x: 0;
+  width: 100%;
+  height: 40;
+}
