@@ -61,22 +61,37 @@ let colors = [["fb-blue", "fb-red",   "fb-green",   "fb-orange",   "grey",      
              ["fb-lime",  "fb-lime","fb-light-gray","fb-light-gray","gray",        "fb-peach", "fb-red","fb-white"]
              ];
 let colProfile = 0;
+let heartRateActive = 1;
+let floorsActive = 1;
+if (device.modelId == 38) { //Versa Lite
+  floorsActive = 0;
+  icon2.href = "stat_dist_open_32px.png";
+}
+//console.log("device ID: " + device.modelId);
 
 const STATUS_FILE = "status.cbor";
 loadStatus();
 
+let hrm;
 if (HeartRateSensor) {
-  const hrm = new HeartRateSensor();
+  hrm = new HeartRateSensor();
   hrm.addEventListener("reading", () => {
     //console.log(`Current heart rate: ${hrm.heartRate}`);
     hrTextBox.text = ""+hrm.heartRate;
-    //hrTextBox2.text = ""+hrm.heartRate;
   });
   display.addEventListener("change", () => {
     // Automatically stop the sensor when the screen is off to conserve battery
-    display.on ? hrm.start() : hrm.stop();
+    if (heartRateActive == 1)
+      display.on ? hrm.start() : hrm.stop();
+    else {
+      hrm.stop();
+      hrTextBox.style.display = "none";
+    }
   });
-  hrm.start();
+  if (heartRateActive == 1)
+    hrm.start();
+  else
+     hrTextBox.style.display = "none";
 }
 
 if (BodyPresenceSensor) {
@@ -132,7 +147,10 @@ clock.ontick = (evt) => {
   dateTextBox.text = `${monthname} ${day}`;
   
   updateSteps();
-  updateFloors();
+  if (floorsActive)
+    updateFloors();
+  else
+    updateDist();
   updateActive();
   updateCals();
   updateBattery();
@@ -157,6 +175,20 @@ function updateFloors() {
     let floors = today.adjusted.elevationGain || 0;
     let goal = goals.elevationGain || 30;
     let complete = floors / goal;
+
+    bar2.height = complete * 142;
+    bar2.y = device.screen.height/2 + 82 - bar2.height;
+    shadow2.y = bar2.y - 3;
+  } catch (ex) {
+    console.log(ex);
+  }
+}
+
+function updateDist() {
+  try {
+    let dist = today.adjusted.distance || 0;
+    let goal = goals.distance || 30;
+    let complete = dist / goal;
 
     bar2.height = complete * 142;
     bar2.y = device.screen.height/2 + 82 - bar2.height;
@@ -224,8 +256,16 @@ document.getElementById("tap1").onclick = function(e) {
 
 document.getElementById("tap2").onclick = function(e) {
   vibration.start("bump");
-  let floors = today.adjusted.elevationGain || 0;
-  statsTextBox.text = ""+floors+" floors"
+  if (floorsActive) {
+    let floors = today.adjusted.elevationGain || 0;
+    statsTextBox.text = ""+floors+" floors"
+  } else {
+    let dist = today.adjusted.distance || 0;
+    if (units.distance === "us") 
+      statsTextBox.text = ""+Math.round(((dist/1609)*10))/10+" miles";
+    else
+      statsTextBox.text = ""+Math.round(((dist/1000)*10))/10+" km";
+  }
   statsTextInstance.animate("enable");
 };
 
@@ -272,7 +312,20 @@ document.getElementById("tapDate").onclick = function(e) {
 
 document.getElementById("tapHR").onclick = function(e) {
   vibration.start("bump");
-  heartIconInstance.animate("enable");
+  if (HeartRateSensor) {
+    heartIconInstance.animate("enable");
+    heartRateActive = 1 - heartRateActive;
+    saveStatus();
+
+    if (heartRateActive == 0) {
+      hrm.stop();
+      hrTextBox.style.display = "none";
+    }
+    else {
+      hrm.start();
+      hrTextBox.style.display = "";
+    }
+  }
 };
 
 function applyColorProfile() {
@@ -299,13 +352,19 @@ function loadStatus() {
     let status = fs.readFileSync(STATUS_FILE, "cbor");
     colProfile = status.colProfile;
     applyColorProfile();
+    heartRateActive = status.heartRateActive;
+    if (heartRateActive != 0 && heartRateActive != 1)
+      heartRateActive = 1;
+    //console.log("HR: " + heartRateActive);
   } catch (ex) {
+    //console.log(ex);
   }
 }
 
 function saveStatus() {
   try {
-    let status = {"colProfile":colProfile
+    let status = {"colProfile":colProfile,
+                  "heartRateActive":heartRateActive
                  };
     fs.writeFileSync(STATUS_FILE, status, "cbor");
   } catch (ex) {
