@@ -15,6 +15,13 @@
         </image>
       </g>
     </symbol>
+    <symbol id="statsBg">
+      <g id="statsBgGroup">
+        <rect id="statsBackground" x="0" y="100%-40" width="100%" height="40" fill="black" opacity="0.0">
+          <animate attributeName="opacity" begin="enable" from="1.0" to="0.0" dur="4" final="keep" />
+        </rect>
+      </g>
+    </symbol>
   </defs>
   
   <!--<rect x="50" y="50" width="5" height="5" fill="fb-extra-dark-gray"/>-->
@@ -95,9 +102,9 @@
   <text id="hrText">
   </text>
 
-
-
-  <use id="statsTextInstance" href="#stats"  />
+  <use id="statsBackgroundInstance" href="#statsBg" display="none" />
+  <use id="statsTextInstance" href="#stats" />
+  
   <rect id="tap1" x="0" y="50%-100" width="22%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
   <rect id="tap2" x="23%" y="50%-100" width="22%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
   <rect id="tap3" x="55%" y="50%-100" width="22%" height="200" fill="black" pointer-events="visible" opacity="0.0"/>
@@ -107,8 +114,5 @@
   <rect id="tapHR" x="0" y="0" width="30%" height="50" fill="black" pointer-events="visible" opacity="0.0"/>
   
   <rect id="tapIcons" x="0" y="100%-50" width="100%" height="50" fill="black" pointer-events="visible" opacity="0.0"/>
-
-
-
 
 </svg>

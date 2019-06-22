@@ -2,7 +2,7 @@
   "fitbit": {
     "appUUID": "86abaf64-fcaf-4b08-8a6e-f0661bffcfdd",
     "appType": "clockface",
-    "appDisplayName": "See behind the numbers",
+    "appDisplayName": "Behind the numbers",
     "iconFile": "resources/icon.png",
     "wipeColor": "",
     "requestedPermissions": [
@@ -16,7 +16,7 @@
     ],
     "i18n": {
       "en": {
-        "name": "See behind the numbers"
+        "name": "Behind the numbers"
       }
     },
     "defaultLanguage": "en-US"

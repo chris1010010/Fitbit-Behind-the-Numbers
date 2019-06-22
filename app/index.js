@@ -12,6 +12,7 @@ import { HeartRateSensor } from "heart-rate";
 import { display } from "display";
 import * as fs from "fs";
 import { BodyPresenceSensor } from "body-presence";
+import { me as appbit } from "appbit";
 
 // Update the clock every minute
 clock.granularity = "minutes";
@@ -46,6 +47,7 @@ const hrTextBox = document.getElementById("hrText");
 //const hrTextBox2 = document.getElementById("hrText");
 const statsTextBox = document.getElementById("statsText");
 const statsTextInstance = document.getElementById("statsTextInstance");
+const statsBackgroundInstance = document.getElementById("statsBackgroundInstance");
 const heartIconInstance = document.getElementById("heartIconInstance");
 
 //Color profiles  0           1           2              3             4                5          6         7
@@ -67,46 +69,53 @@ if (device.modelId == 38) { //Versa Lite
   floorsActive = 0;
   icon2.href = "stat_dist_open_32px.png";
 }
+if (device.modelId == 27) { //Ionic
+  statsTextBox.y = device.screen.height - 50;
+  statsBackgroundInstance.style.display = "";
+}
 //console.log("device ID: " + device.modelId);
 
 const STATUS_FILE = "status.cbor";
 loadStatus();
 
 let hrm;
-if (HeartRateSensor) {
-  hrm = new HeartRateSensor();
-  hrm.addEventListener("reading", () => {
-    //console.log(`Current heart rate: ${hrm.heartRate}`);
-    hrTextBox.text = ""+hrm.heartRate;
-  });
-  display.addEventListener("change", () => {
-    // Automatically stop the sensor when the screen is off to conserve battery
+try {
+  if (HeartRateSensor && appbit.permissions.granted("access_heart_rate")) {
+    hrm = new HeartRateSensor();
+    hrm.addEventListener("reading", () => {
+      //console.log(`Current heart rate: ${hrm.heartRate}`);
+      hrTextBox.text = ""+hrm.heartRate;
+    });
+    display.addEventListener("change", () => {
+      // Automatically stop the sensor when the screen is off to conserve battery
+      if (heartRateActive == 1)
+        display.on ? hrm.start() : hrm.stop();
+      else {
+        hrm.stop();
+        hrTextBox.style.display = "none";
+      }
+    });
     if (heartRateActive == 1)
-      display.on ? hrm.start() : hrm.stop();
-    else {
-      hrm.stop();
-      hrTextBox.style.display = "none";
-    }
-  });
-  if (heartRateActive == 1)
-    hrm.start();
-  else
-     hrTextBox.style.display = "none";
-}
-
-if (BodyPresenceSensor) {
-  const body = new BodyPresenceSensor();
-  body.addEventListener("reading", () => {
-    if (body.present) {
-      hrTextBox.style.display = "";
-      //hrTextBox2.style.display = "";
-      heartIconInstance.animate("enable");
-    } else {
-      hrTextBox.style.display = "none";
-      //hrTextBox2.style.display = "none";
-    }
-  });
-  body.start();
+      hrm.start();
+    else
+       hrTextBox.style.display = "none";
+  }
+  if (BodyPresenceSensor) {
+    const body = new BodyPresenceSensor();
+    body.addEventListener("reading", () => {
+      if (body.present) {
+        hrTextBox.style.display = "";
+        //hrTextBox2.style.display = "";
+        heartIconInstance.animate("enable");
+      } else {
+        hrTextBox.style.display = "none";
+        //hrTextBox2.style.display = "none";
+      }
+    });
+    body.start();
+  }
+} catch (ex) {
+  console.log(ex);
 }
 
 // Update the <text> element every tick with the current time
@@ -248,103 +257,145 @@ function updateBattery() {
 }
 
 document.getElementById("tap1").onclick = function(e) {
-  vibration.start("bump");
-  let steps = today.adjusted.steps || 0;
-  statsTextBox.text = ""+steps+" steps"
-  statsTextInstance.animate("enable");
+  try {
+    vibration.start("bump");
+    let steps = today.adjusted.steps || 0;
+    statsTextBox.text = ""+steps+" steps"
+    statsBackgroundInstance.animate("enable");
+    statsTextInstance.animate("enable");
+  } catch (ex) {
+    console.log(ex);
+  }
 };
 
 document.getElementById("tap2").onclick = function(e) {
-  vibration.start("bump");
-  if (floorsActive) {
-    let floors = today.adjusted.elevationGain || 0;
-    statsTextBox.text = ""+floors+" floors"
-  } else {
+  try {
+    vibration.start("bump");
+    if (floorsActive) {
+      let floors = today.adjusted.elevationGain || 0;
+      statsTextBox.text = ""+floors+" floors"
+    } else {
+      let dist = today.adjusted.distance || 0;
+      if (units.distance === "us") 
+        statsTextBox.text = ""+Math.round(((dist/1609)*10))/10+" miles";
+      else
+        statsTextBox.text = ""+Math.round(((dist/1000)*10))/10+" km";
+    }
+    statsBackgroundInstance.animate("enable");
+    statsTextInstance.animate("enable");
+  } catch (ex) {
+    console.log(ex);
+  }
+};
+
+document.getElementById("tap3").onclick = function(e) {
+  try {
+    vibration.start("bump");
+    let am = today.adjusted.activeMinutes || 0;
+    statsTextBox.text = ""+am+" minutes"
+    statsBackgroundInstance.animate("enable");
+    statsTextInstance.animate("enable");
+  } catch (ex) {
+    console.log(ex);
+  }
+};
+
+document.getElementById("tap4").onclick = function(e) {
+  try {
+    vibration.start("bump");
+    let cals = today.adjusted.calories || 0;
+    statsTextBox.text = ""+cals+" calories"
+    statsBackgroundInstance.animate("enable");
+    statsTextInstance.animate("enable");
+  } catch (ex) {
+    console.log(ex);
+  }
+};
+
+document.getElementById("tapBattery").onclick = function(e) {
+  try {
+    vibration.start("bump");
+    let charge = battery.chargeLevel;
+    statsTextBox.text = ""+Math.floor(charge)+"% battery"
+    statsBackgroundInstance.animate("enable");
+    statsTextInstance.animate("enable");
+  } catch (ex) {
+    console.log(ex);
+  }
+};
+
+document.getElementById("tapIcons").onclick = function(e) {
+  try {
+    vibration.start("bump");
+    colProfile++;
+    if (colProfile >= colors.length)
+      colProfile = 0;
+
+    applyColorProfile();
+    saveStatus();
+  } catch (ex) {
+    console.log(ex);
+  }
+};
+
+document.getElementById("tapDate").onclick = function(e) {
+  try {
+    vibration.start("bump");
     let dist = today.adjusted.distance || 0;
     if (units.distance === "us") 
       statsTextBox.text = ""+Math.round(((dist/1609)*10))/10+" miles";
     else
       statsTextBox.text = ""+Math.round(((dist/1000)*10))/10+" km";
+    statsBackgroundInstance.animate("enable");
+    statsTextInstance.animate("enable");
+  } catch (ex) {
+    console.log(ex);
   }
-  statsTextInstance.animate("enable");
-};
-
-document.getElementById("tap3").onclick = function(e) {
-  vibration.start("bump");
-  let am = today.adjusted.activeMinutes || 0;
-  statsTextBox.text = ""+am+" minutes"
-  statsTextInstance.animate("enable");
-};
-
-document.getElementById("tap4").onclick = function(e) {
-  vibration.start("bump");
-  let cals = today.adjusted.calories || 0;
-  statsTextBox.text = ""+cals+" calories"
-  statsTextInstance.animate("enable");
-};
-
-document.getElementById("tapBattery").onclick = function(e) {
-  vibration.start("bump");
-  let charge = battery.chargeLevel;
-  statsTextBox.text = ""+Math.floor(charge)+"% battery"
-  statsTextInstance.animate("enable");
-};
-
-document.getElementById("tapIcons").onclick = function(e) {
-  vibration.start("bump");
-  colProfile++;
-  if (colProfile >= colors.length)
-    colProfile = 0;
-  
-  applyColorProfile();
-  saveStatus();
-};
-
-document.getElementById("tapDate").onclick = function(e) {
-  vibration.start("bump");
-  let dist = today.adjusted.distance || 0;
-  if (units.distance === "us") 
-    statsTextBox.text = ""+Math.round(((dist/1609)*10))/10+" miles";
-  else
-    statsTextBox.text = ""+Math.round(((dist/1000)*10))/10+" km";
-  statsTextInstance.animate("enable");
 };
 
 document.getElementById("tapHR").onclick = function(e) {
-  vibration.start("bump");
-  if (HeartRateSensor) {
-    heartIconInstance.animate("enable");
-    heartRateActive = 1 - heartRateActive;
-    saveStatus();
+  try {
+    vibration.start("bump");
+    if (HeartRateSensor && appbit.permissions.granted("access_heart_rate")) {
+      heartIconInstance.animate("enable");
+      heartRateActive = 1 - heartRateActive;
+      saveStatus();
 
-    if (heartRateActive == 0) {
-      hrm.stop();
-      hrTextBox.style.display = "none";
+      if (heartRateActive == 0) {
+        hrm.stop();
+        hrTextBox.style.display = "none";
+      }
+      else {
+        hrm.start();
+        hrTextBox.style.display = "";
+      }
     }
-    else {
-      hrm.start();
-      hrTextBox.style.display = "";
-    }
+  } catch (ex) {
+    console.log(ex);
   }
 };
 
 function applyColorProfile() {
-  let cols = colors[colProfile];
-  background1.gradient.colors.c1 = cols[0];
-  bar1.style.fill = cols[0];
-  icon1.style.fill = cols[0];
-  background2.gradient.colors.c1 = cols[1];
-  bar2.style.fill = cols[1];
-  icon2.style.fill = cols[1];
-  background3.gradient.colors.c1 = cols[2];
-  bar3.style.fill = cols[2];
-  icon3.style.fill = cols[2];
-  background4.gradient.colors.c1 = cols[3];
-  bar4.style.fill = cols[3];
-  icon4.style.fill = cols[3];
-  updateBattery();
-  dateTextBox.style.fill = cols[7];
-  hrTextBox.style.fill = cols[7];
+  try {
+    let cols = colors[colProfile];
+    background1.gradient.colors.c1 = cols[0];
+    bar1.style.fill = cols[0];
+    icon1.style.fill = cols[0];
+    background2.gradient.colors.c1 = cols[1];
+    bar2.style.fill = cols[1];
+    icon2.style.fill = cols[1];
+    background3.gradient.colors.c1 = cols[2];
+    bar3.style.fill = cols[2];
+    icon3.style.fill = cols[2];
+    background4.gradient.colors.c1 = cols[3];
+    bar4.style.fill = cols[3];
+    icon4.style.fill = cols[3];
+    updateBattery();
+    dateTextBox.style.fill = cols[7];
+    hrTextBox.style.fill = cols[7];
+  } catch (ex) {
+    console.log(ex);
+  }
 }
 
 function loadStatus() {
